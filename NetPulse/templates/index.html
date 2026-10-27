@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NetPulse | Network Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark"><span></span><span></span><span></span></div>
+        <div><strong>netpulse</strong><small>NETWORK INTELLIGENCE</small></div>
+      </div>
+      <div class="side-label">WORKSPACE</div>
+      <a class="nav-link active" href="#overview"><span class="nav-icon">◫</span> Overview</a>
+      <a class="nav-link" href="#monitor"><span class="nav-icon">⌁</span> Host monitor</a>
+      <a class="nav-link" href="#traffic"><span class="nav-icon">⇅</span> Traffic statistics</a>
+      <a class="nav-link" href="#history"><span class="nav-icon">◷</span> Check history</a>
+      <div class="sidebar-bottom">
+        <div class="live-indicator"><span class="pulse"></span><div><strong>Local agent</strong><small>Dashboard connected</small></div></div>
+        <div class="sidebar-note">Educational network monitoring<br>Build · Observe · Understand</div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div>
+          <div class="eyebrow">NETWORK OPERATIONS / OVERVIEW</div>
+          <h1>Network overview</h1>
+          <p class="subheading">Understand your connectivity at a glance.</p>
+        </div>
+        <div class="topbar-right">
+          <span class="status-pill"><span class="pulse"></span> System ready</span>
+          <div class="avatar">NP</div>
+        </div>
+      </header>
+
+      <section class="hero" id="overview">
+        <div class="hero-copy">
+          <div class="hero-tag"><span class="hero-dot"></span> NETWORK HEALTH CENTER</div>
+          <h2>Every connection.<br><span>In perspective.</span></h2>
+          <p>Measure TCP response times, inspect traffic trends, and keep a useful record of your network checks.</p>
+          <a class="hero-button" href="#monitor">Run a connection test <span>↗</span></a>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+          <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+          <div class="orbit orbit-three"></div>
+          <div class="network-core"><div class="core-inner">NP</div></div>
+          <div class="node node-a"><span>↗</span></div>
+          <div class="node node-b"><span>⌁</span></div>
+          <div class="node node-c"><span>⇄</span></div>
+          <div class="node node-d"><span>●</span></div>
+          <div class="connection-line line-a"></div><div class="connection-line line-b"></div>
+        </div>
+        <div class="hero-grid"></div>
+      </section>
+
+      <section class="stats-grid">
+        <article class="stat-card">
+          <div class="stat-top"><span>Total checks</span><span class="stat-icon violet">⌁</span></div>
+          <div class="stat-value" id="totalChecks">0</div>
+          <div class="stat-foot">All saved TCP tests</div>
+        </article>
+        <article class="stat-card">
+          <div class="stat-top"><span>Successful checks</span><span class="stat-icon green">✓</span></div>
+          <div class="stat-value" id="successfulChecks">0</div>
+          <div class="stat-foot"><span class="tiny-dot green-dot"></span> TCP connection established</div>
+        </article>
+        <article class="stat-card">
+          <div class="stat-top"><span>Failed checks</span><span class="stat-icon red">!</span></div>
+          <div class="stat-value" id="failedChecks">0</div>
+          <div class="stat-foot">Timeouts or connection errors</div>
+        </article>
+        <article class="stat-card">
+          <div class="stat-top"><span>Average latency</span><span class="stat-icon blue">◷</span></div>
+          <div class="stat-value"><span id="avgLatency">—</span><small> ms</small></div>
+          <div class="stat-foot">Successful TCP connections</div>
+        </article>
+      </section>
+
+      <section class="content-grid">
+        <article class="panel monitor-panel" id="monitor">
+          <div class="panel-heading">
+            <div><div class="eyebrow">CONNECTIVITY</div><h3>Host monitor</h3></div>
+            <span class="mini-badge">TCP SOCKET</span>
+          </div>
+          <p class="panel-description">Test a hostname or IP address on a specific TCP port.</p>
+          <form id="monitorForm" class="monitor-form">
+            <label>Display name<input id="hostName" maxlength="60" placeholder="e.g. My web server"></label>
+            <div class="form-row">
+              <label class="host-field">Hostname or IP<input id="hostInput" required value="example.com" placeholder="example.com"></label>
+              <label class="port-field">Port<input id="portInput" required type="number" min="1" max="65535" value="443"></label>
+            </div>
+            <button id="testButton" class="primary-button" type="submit"><span>⌁</span> Test connection <span class="button-arrow">→</span></button>
+          </form>
+          <div class="quick-targets">
+            <div class="quick-title">QUICK TESTS</div>
+            <div class="target-chips">
+              {% for target in targets %}
+              <button class="target-chip" type="button" data-name="{{ target.name }}" data-host="{{ target.host }}" data-port="{{ target.port }}">
+                <span class="chip-dot"></span>{{ target.name }} <small>:{{ target.port }}</small>
+              </button>
+              {% endfor %}
+            </div>
+          </div>
+          <div id="resultBox" class="result-box empty-result">
+            <div class="result-symbol">⌁</div><div><strong>Ready to test</strong><p>Your latest connection result will appear here.</p></div>
+          </div>
+        </article>
+
+        <article class="panel chart-panel" id="history">
+          <div class="panel-heading">
+            <div><div class="eyebrow">PERFORMANCE</div><h3>Response time</h3></div>
+            <span class="chart-unit">MILLISECONDS</span>
+          </div>
+          <p class="panel-description">Recent successful TCP connection times.</p>
+          <div class="chart-wrap"><canvas id="latencyChart" aria-label="TCP response time chart"></canvas></div>
+          <div class="chart-footer"><span><i class="legend-dot"></i> TCP connect time</span><span id="chartCount">0 data points</span></div>
+        </article>
+      </section>
+
+      <section class="content-grid lower-grid">
+        <article class="panel traffic-panel" id="traffic">
+          <div class="panel-heading">
+            <div><div class="eyebrow">INTERFACE TELEMETRY</div><h3>Traffic statistics</h3></div>
+            <span class="live-tag"><span class="pulse"></span> LIVE POLLING</span>
+          </div>
+          <p class="panel-description">System-wide network counters from your computer's network interfaces.</p>
+          <div class="traffic-metrics">
+            <div class="traffic-metric upload-metric">
+              <div class="metric-label"><span class="metric-arrow">↑</span> UPLOAD RATE</div>
+              <div class="metric-value" id="uploadRate">0 <small>B/s</small></div>
+              <div class="metric-total">Total sent <strong id="bytesSent">0 B</strong></div>
+            </div>
+            <div class="traffic-metric download-metric">
+              <div class="metric-label"><span class="metric-arrow">↓</span> DOWNLOAD RATE</div>
+              <div class="metric-value" id="downloadRate">0 <small>B/s</small></div>
+              <div class="metric-total">Total received <strong id="bytesReceived">0 B</strong></div>
+            </div>
+          </div>
+          <div class="traffic-foot"><span class="tiny-dot green-dot"></span> Sampling every 4 seconds <span id="trafficUpdated">Waiting for first sample</span></div>
+        </article>
+
+        <article class="panel alerts-panel">
+          <div class="panel-heading">
+            <div><div class="eyebrow">ATTENTION</div><h3>Recent alerts</h3></div>
+            <span class="alert-count" id="alertCount">0</span>
+          </div>
+          <div id="alertsList" class="alerts-list"><div class="empty-alerts">No alerts yet. Run a test to begin.</div></div>
+          <div class="alerts-foot">Alerts are generated by your connection tests.</div>
+        </article>
+      </section>
+
+      <section class="panel history-table-panel">
+        <div class="panel-heading">
+          <div><div class="eyebrow">RECENT ACTIVITY</div><h3>Monitoring history</h3></div>
+          <span class="mini-badge">SQLITE STORAGE</span>
+        </div>
+        <div class="table-scroll">
+          <table><thead><tr><th>TARGET</th><th>HOST / PORT</th><th>STATUS</th><th>LATENCY</th><th>TIME</th></tr></thead>
+            <tbody id="historyBody"><tr><td colspan="5" class="empty-table">No checks saved yet. Run a test above.</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+      <footer class="page-footer"><span><strong>netpulse</strong> · Network Programming Project</span><span>Built with Python sockets, Flask & SQLite</span></footer>
+    </main>
+  </div>
+  <div id="toast" class="toast" role="status"></div>
+  <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>
